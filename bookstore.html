@@ -1,0 +1,2637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNook | Online Bookstore</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/graphql@15.8.0/graphql.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        nav ul li a:hover {
+            color: var(--secondary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        nav ul li a.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .search-cart {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .search-box input {
+            border: none;
+            padding: 0.5rem 1rem;
+            width: 200px;
+            outline: none;
+        }
+
+        .search-box button {
+            background: var(--secondary);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-box button:hover {
+            background: #2980b9;
+        }
+
+        .cart-icon, .wishlist-icon, .user-icon {
+            position: relative;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .cart-icon:hover, .wishlist-icon:hover, .user-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cart-count, .wishlist-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.9)), url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* About Page */
+        .about-page {
+            display: none;
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .about-page.active {
+            display: block;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-content h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--light);
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Featured Books */
+        .section-title {
+            text-align: center;
+            margin: 3rem 0 2rem;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            margin: 10px auto;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-img {
+            height: 300px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .book-card:hover .book-img img {
+            transform: scale(1.05);
+        }
+
+        .book-img i {
+            font-size: 4rem;
+            position: absolute;
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .book-actions {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .book-card:hover .book-actions {
+            opacity: 1;
+        }
+
+        .quick-view, .wishlist-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .quick-view:hover, .wishlist-btn:hover {
+            background: var(--secondary);
+        }
+
+        .wishlist-btn.active {
+            background: var(--accent);
+        }
+
+        .book-info {
+            padding: 1.5rem;
+        }
+
+        .book-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .book-author {
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .book-rating {
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .book-price {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--gray);
+            font-size: 1rem;
+            font-weight: normal;
+        }
+
+        .discount {
+            color: var(--success);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .add-to-cart {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.7rem 1rem;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        .add-to-cart:hover {
+            background: var(--secondary);
+        }
+
+        .add-to-cart.added {
+            background: var(--success);
+        }
+
+        .add-to-cart:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+
+        /* Search Results */
+        .search-results {
+            padding: 2rem 0;
+        }
+
+        .search-info {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--gray);
+        }
+
+        /* Categories */
+        .categories {
+            background: var(--light);
+            padding: 3rem 0;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: var(--secondary);
+            color: white;
+        }
+
+        .category-card:hover i {
+            color: white;
+        }
+
+        .category-card i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal.open {
+            right: 0;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-header h2 {
+            color: white;
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-content {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* Cart Items */
+        .cart-item, .wishlist-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .cart-item-img, .wishlist-item-img {
+            width: 80px;
+            height: 100px;
+            background: #eee;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cart-item-img img, .wishlist-item-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-details, .wishlist-item-details {
+            flex: 1;
+        }
+
+        .cart-item-title, .wishlist-item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .cart-item-price, .wishlist-item-price {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .quantity-btn {
+            background: var(--light);
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .quantity-btn:disabled {
+            background: #f5f5f5;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .quantity {
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .item-remove {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .item-remove:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .cart-total, .wishlist-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .checkout-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #2980b9;
+        }
+
+        .checkout-btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+
+        /* Payment Modal */
+        .payment-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1002;
+            display: none;
+        }
+
+        .payment-modal.open {
+            display: block;
+        }
+
+        .payment-header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .payment-body {
+            padding: 1.5rem;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method {
+            text-align: center;
+            padding: 1rem;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: var(--secondary);
+        }
+
+        .payment-method.selected {
+            border-color: var(--secondary);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .payment-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            flex: 1;
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* Order Success Modal */
+        .order-success {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .order-success i {
+            font-size: 4rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .order-success h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* Newsletter */
+        .newsletter {
+            background: var(--primary);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .newsletter h2 {
+            margin-bottom: 1rem;
+        }
+
+        .newsletter p {
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        .newsletter-form button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .newsletter-form button:hover {
+            background: #c0392b;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--secondary);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-column ul li a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .footer-column ul li a:hover {
+            color: var(--secondary);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .social-links a:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.error {
+            background: var(--accent);
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* API Status */
+        .api-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1003;
+        }
+
+        .api-status.connected {
+            background: var(--success);
+            color: white;
+        }
+
+        .api-status.disconnected {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                gap: 0.5rem;
+            }
+
+            nav ul li {
+                margin-left: 0;
+            }
+
+            .search-box input {
+                width: 150px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .modal {
+                width: 100%;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .book-actions {
+                opacity: 1;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .newsletter-form input,
+            .newsletter-form button {
+                width: 100%;
+                border-radius: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Enhanced Book data with real images - FIXED Atomic Habits image
+        const bookData = [
+            {
+                id: 1,
+                title: "The Silent Patient",
+                author: "Alex Michaelides",
+                price: 999,
+                originalPrice: 1299,
+                category: "Mystery",
+                rating: 4.5,
+                reviews: 1250,
+                description: "A psychological thriller about a woman who shoots her husband and then stops speaking.",
+                image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                badge: "Bestseller",
+                inStock: true
+            },
+            {
+                id: 2,
+                title: "Where the Crawdads Sing",
+                author: "Delia Owens",
+                price: 1149,
+                originalPrice: 1499,
+                category: "Fiction",
+                rating: 4.7,
+                reviews: 890,
+                description: "A story about an abandoned girl who raises herself in the marshes of North Carolina.",
+                image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                badge: "Popular",
+                inStock: true
+            },
+            {
+                id: 3,
+                title: "The Midnight Library",
+                author: "Matt Haig",
+                price: 1049,
+                originalPrice: 1399,
+                category: "Fiction",
+                rating: 4.3,
+                reviews: 760,
+                description: "A novel about a library that contains books that let you experience different lives.",
+                image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                badge: "New",
+                inStock: true
+            },
+            {
+                id: 4,
+                title: "Project Hail Mary",
+                author: "Andy Weir",
+                price: 1249,
+                originalPrice: 1599,
+                category: "Sci-Fi",
+                rating: 4.8,
+                reviews: 920,
+                description: "A lone astronaut must save the earth from disaster in this high-stakes sci-fi novel.",
+                image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                badge: "Bestseller",
+                inStock: false
+            },
+            {
+                id: 5,
+                title: "The Four Winds",
+                author: "Kristin Hannah",
+                price: 1299,
+                originalPrice: 1699,
+                category: "Historical Fiction",
+                rating: 4.6,
+                reviews: 680,
+                description: "An epic novel of love and heroism set during the Great Depression.",
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                badge: "Sale",
+                inStock: true
+            },
+            {
+                id: 6,
+                title: "Atomic Habits",
+                author: "James Clear",
+                price: 899,
+                originalPrice: 1199,
+                category: "Self-Help",
+                rating: 4.9,
+                reviews: 2100,
+                description: "A guide to building good habits and breaking bad ones with practical strategies.",
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80", // Fixed image URL
+                badge: "Bestseller",
+                inStock: true
+            },
+            {
+                id: 7,
+                title: "The Alchemist",
+                author: "Paulo Coelho",
+                price: 699,
+                originalPrice: 899,
+                category: "Fiction",
+                rating: 4.5,
+                reviews: 3500,
+                description: "A mystical story of a shepherd boy's journey to find his personal legend.",
+                image: "https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                badge: "Classic",
+                inStock: true
+            },
+            {
+                id: 8,
+                title: "Harry Potter and the Sorcerer's Stone",
+                author: "J.K. Rowling",
+                price: 799,
+                originalPrice: 999,
+                category: "Fantasy",
+                rating: 4.8,
+                reviews: 5000,
+                description: "The first book in the Harry Potter series about a young wizard's magical journey.",
+                image: "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                badge: "Bestseller",
+                inStock: true
+            }
+        ];
+
+        // Categories data
+        const categories = [
+            { id: 1, name: "Fiction", icon: "fas fa-mask" },
+            { id: 2, name: "Education", icon: "fas fa-user-graduate" },
+            { id: 3, name: "Romance", icon: "fas fa-heart" },
+            { id: 4, name: "Mystery", icon: "fas fa-search" },
+            { id: 5, name: "Sci-Fi", icon: "fas fa-rocket" },
+            { id: 6, name: "Business", icon: "fas fa-chart-line" }
+        ];
+
+        // Payment methods
+        const paymentMethods = [
+            { id: 1, name: "Credit Card", icon: "fas fa-credit-card" },
+            { id: 2, name: "Debit Card", icon: "fas fa-credit-card" },
+            { id: 3, name: "UPI", icon: "fas fa-mobile-alt" },
+            { id: 4, name: "Net Banking", icon: "fas fa-university" }
+        ];
+
+        // GraphQL Service - INTEGRATED BACKEND
+        class BookNookAPI {
+            constructor() {
+                this.endpoint = 'http://localhost:4000/graphql';
+                this.isConnected = false;
+                this.testConnection();
+            }
+
+            async testConnection() {
+                try {
+                    const response = await fetch(this.endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query: '{ __schema { types { name } } }'
+                        })
+                    });
+                    this.isConnected = response.ok;
+                } catch (error) {
+                    this.isConnected = false;
+                    console.log('GraphQL server not available, using local data');
+                }
+            }
+
+            async query(query, variables = {}) {
+                try {
+                    const response = await fetch(this.endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query,
+                            variables
+                        })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.errors) {
+                        console.error('GraphQL errors:', result.errors);
+                        throw new Error(result.errors[0].message);
+                    }
+                    
+                    return result.data;
+                } catch (error) {
+                    console.error('GraphQL query error:', error);
+                    // Fallback to local data
+                    return this.fallbackQuery(query, variables);
+                }
+            }
+
+            async mutate(mutation, variables = {}) {
+                return this.query(mutation, variables);
+            }
+
+            // Fallback to local data when GraphQL is unavailable
+            fallbackQuery(query, variables) {
+                console.log('Using local data fallback');
+                
+                // Parse the query to determine what data to return
+                if (query.includes('books {') && !query.includes('book(id:')) {
+                    return { books: bookData };
+                }
+                
+                if (query.includes('book(id:')) {
+                    const bookId = variables.id;
+                    const book = bookData.find(b => b.id === parseInt(bookId));
+                    return { book };
+                }
+                
+                if (query.includes('searchBooks')) {
+                    const searchTerm = variables.query.toLowerCase();
+                    const results = bookData.filter(book => 
+                        book.title.toLowerCase().includes(searchTerm) ||
+                        book.author.toLowerCase().includes(searchTerm) ||
+                        book.category.toLowerCase().includes(searchTerm)
+                    );
+                    return { searchBooks: results };
+                }
+                
+                if (query.includes('booksByCategory')) {
+                    const category = variables.category.toLowerCase();
+                    const results = bookData.filter(book => 
+                        book.category.toLowerCase() === category
+                    );
+                    return { booksByCategory: results };
+                }
+                
+                if (query.includes('categories')) {
+                    return { categories };
+                }
+                
+                if (query.includes('featuredBooks')) {
+                    const featured = bookData.filter(book => book.rating >= 4.5).slice(0, 6);
+                    return { featuredBooks: featured };
+                }
+                
+                if (query.includes('bestsellers')) {
+                    const bestsellers = bookData.filter(book => book.badge === 'Bestseller');
+                    return { bestsellers };
+                }
+                
+                if (query.includes('addToCart')) {
+                    const book = bookData.find(b => b.id === parseInt(variables.bookId));
+                    return { addToCart: { book, quantity: variables.quantity } };
+                }
+                
+                if (query.includes('createOrder')) {
+                    const total = variables.cartItems.reduce((sum, item) => {
+                        const book = bookData.find(b => b.id === parseInt(item.bookId));
+                        return sum + (book.price * item.quantity);
+                    }, 0);
+                    
+                    return {
+                        createOrder: {
+                            id: `ORD${Date.now()}`,
+                            total,
+                            status: 'CONFIRMED',
+                            createdAt: new Date().toISOString(),
+                            items: variables.cartItems.map(item => ({
+                                book: bookData.find(b => b.id === parseInt(item.bookId)),
+                                quantity: item.quantity
+                            }))
+                        }
+                    };
+                }
+                
+                return {};
+            }
+
+            // Book queries
+            async getAllBooks() {
+                const query = `
+                    query {
+                        books {
+                            id
+                            title
+                            author
+                            price
+                            originalPrice
+                            category
+                            rating
+                            reviews
+                            description
+                            image
+                            badge
+                            inStock
+                        }
+                    }
+                `;
+                const data = await this.query(query);
+                return data.books;
+            }
+
+            async getBook(id) {
+                const query = `
+                    query GetBook($id: ID!) {
+                        book(id: $id) {
+                            id
+                            title
+                            author
+                            price
+                            originalPrice
+                            category
+                            rating
+                            reviews
+                            description
+                            image
+                            badge
+                            inStock
+                        }
+                    }
+                `;
+                const data = await this.query(query, { id });
+                return data.book;
+            }
+
+            async searchBooks(query) {
+                const gqlQuery = `
+                    query SearchBooks($query: String!) {
+                        searchBooks(query: $query) {
+                            id
+                            title
+                            author
+                            price
+                            originalPrice
+                            category
+                            rating
+                            reviews
+                            description
+                            image
+                            badge
+                            inStock
+                        }
+                    }
+                `;
+                const data = await this.query(gqlQuery, { query });
+                return data.searchBooks;
+            }
+
+            async getBooksByCategory(category) {
+                const query = `
+                    query GetBooksByCategory($category: String!) {
+                        booksByCategory(category: $category) {
+                            id
+                            title
+                            author
+                            price
+                            originalPrice
+                            category
+                            rating
+                            reviews
+                            description
+                            image
+                            badge
+                            inStock
+                        }
+                    }
+                `;
+                const data = await this.query(query, { category });
+                return data.booksByCategory;
+            }
+
+            async getFeaturedBooks() {
+                const query = `
+                    query {
+                        featuredBooks {
+                            id
+                            title
+                            author
+                            price
+                            originalPrice
+                            category
+                            rating
+                            reviews
+                            description
+                            image
+                            badge
+                            inStock
+                        }
+                    }
+                `;
+                const data = await this.query(query);
+                return data.featuredBooks;
+            }
+
+            async getBestsellers() {
+                const query = `
+                    query {
+                        bestsellers {
+                            id
+                            title
+                            author
+                            price
+                            originalPrice
+                            category
+                            rating
+                            reviews
+                            description
+                            image
+                            badge
+                            inStock
+                        }
+                    }
+                `;
+                const data = await this.query(query);
+                return data.bestsellers;
+            }
+
+            // Category queries
+            async getCategories() {
+                const query = `
+                    query {
+                        categories {
+                            id
+                            name
+                            icon
+                        }
+                    }
+                `;
+                const data = await this.query(query);
+                return data.categories;
+            }
+
+            // Cart mutations
+            async addToCart(bookId, quantity = 1) {
+                const mutation = `
+                    mutation AddToCart($bookId: ID!, $quantity: Int!) {
+                        addToCart(bookId: $bookId, quantity: $quantity) {
+                            book {
+                                id
+                                title
+                                price
+                            }
+                            quantity
+                        }
+                    }
+                `;
+                const data = await this.mutate(mutation, { bookId, quantity });
+                return data.addToCart;
+            }
+
+            // Order mutations
+            async createOrder(cartItems) {
+                const mutation = `
+                    mutation CreateOrder($cartItems: [CartItemInput!]!) {
+                        createOrder(cartItems: $cartItems) {
+                            id
+                            total
+                            status
+                            createdAt
+                            items {
+                                book {
+                                    id
+                                    title
+                                    price
+                                }
+                                quantity
+                            }
+                        }
+                    }
+                `;
+                const data = await this.mutate(mutation, { cartItems });
+                return data.createOrder;
+            }
+        }
+
+        // Create API instance
+        const bookNookAPI = new BookNookAPI();
+
+        // React Components
+        const { useState, useEffect } = React;
+
+        // API Status Component
+        function ApiStatus({ isConnected }) {
+            return (
+                <div className={`api-status ${isConnected ? 'connected' : 'disconnected'}`}>
+                    {isConnected ? '🟢 API Connected' : '🔴 Using Local Data'}
+                </div>
+            );
+        }
+
+        // Toast Component
+        function Toast({ message, show, type }) {
+            if (!show) return null;
+            
+            return (
+                <div className={`toast ${show ? 'show' : ''} ${type}`}>
+                    {message}
+                </div>
+            );
+        }
+
+        // About Page Component
+        function AboutPage({ isActive }) {
+            if (!isActive) return null;
+
+            return (
+                <section className={`about-page ${isActive ? 'active' : ''}`}>
+                    <div className="container">
+                        <div className="about-content">
+                            <h2>About BookNook</h2>
+                            <p>Welcome to BookNook, your premier destination for discovering and purchasing books across all genres. We are passionate about connecting readers with their next great read and fostering a love for literature.</p>
+                            
+                            <p>Founded in 2020, BookNook has grown from a small local bookstore to a comprehensive online platform serving book lovers nationwide. Our mission is to make quality literature accessible to everyone while supporting authors and publishers.</p>
+                            
+                            <div className="about-features">
+                                <div className="feature-card">
+                                    <i className="fas fa-shipping-fast"></i>
+                                    <h3>Fast Delivery</h3>
+                                    <p>Free shipping on orders above ₹499. Delivery within 2-5 business days.</p>
+                                </div>
+                                <div className="feature-card">
+                                    <i className="fas fa-book-open"></i>
+                                    <h3>Wide Selection</h3>
+                                    <p>Over 50,000 titles across all genres from bestsellers to rare finds.</p>
+                                </div>
+                                <div className="feature-card">
+                                    <i className="fas fa-headset"></i>
+                                    <h3>24/7 Support</h3>
+                                    <p>Our customer service team is always here to help you with any queries.</p>
+                                </div>
+                            </div>
+
+                            <h3>Our Story</h3>
+                            <p>BookNook started as a small independent bookstore in Mumbai with a simple vision: to create a space where book lovers could discover new stories and connect with like-minded readers. As we grew, we realized the potential to reach more readers through our online platform while maintaining the personalized service that made us special.</p>
+                            
+                            <h3>Why Choose BookNook?</h3>
+                            <ul style={{marginLeft: '2rem', marginBottom: '2rem'}}>
+                                <li>Curated selection of quality books</li>
+                                <li>Competitive prices with regular discounts</li>
+                                <li>Easy returns and exchanges</li>
+                                <li>Personalized book recommendations</li>
+                                <li>Support for local authors</li>
+                            </ul>
+
+                            <p>Thank you for choosing BookNook. We're excited to be part of your reading journey!</p>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Header Component - FIXED wishlist icon
+        function Header({ cartCount, wishlistCount, toggleCart, toggleWishlist, setActiveCategory, activeCategory, setCurrentPage, currentPage, setSearchQuery }) {
+            const [searchInput, setSearchInput] = useState('');
+
+            const handleSearch = (e) => {
+                e.preventDefault();
+                if (searchInput.trim() !== '') {
+                    setSearchQuery(searchInput.trim());
+                    setCurrentPage('search');
+                    setSearchInput('');
+                }
+            };
+
+            const handleNavClick = (category, page) => {
+                setActiveCategory(category);
+                setCurrentPage(page);
+                setSearchQuery('');
+            };
+
+            return (
+                <header>
+                    <div className="container">
+                        <div className="header-content">
+                            <div className="logo" onClick={() => handleNavClick('all', 'home')}>
+                                <i className="fas fa-book"></i>
+                                Book<span>Nook</span>
+                            </div>
+                            <nav>
+                                <ul>
+                                    <li><a 
+                                        className={currentPage === 'home' ? 'active' : ''}
+                                        onClick={() => handleNavClick('all', 'home')}
+                                    >Home</a></li>
+                                    <li><a 
+                                        className={activeCategory === 'fiction' ? 'active' : ''}
+                                        onClick={() => handleNavClick('fiction', 'home')}
+                                    >Fiction</a></li>
+                                    <li><a 
+                                        className={activeCategory === 'bestsellers' ? 'active' : ''}
+                                        onClick={() => handleNavClick('bestsellers', 'home')}
+                                    >Best Sellers</a></li>
+                                    <li><a 
+                                        className={currentPage === 'about' ? 'active' : ''}
+                                        onClick={() => setCurrentPage('about')}
+                                    >About</a></li>
+                                </ul>
+                            </nav>
+                            <div className="search-cart">
+                                <form className="search-box" onSubmit={handleSearch}>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Search books..." 
+                                        value={searchInput}
+                                        onChange={(e) => setSearchInput(e.target.value)}
+                                    />
+                                    <button type="submit"><i className="fas fa-search"></i></button>
+                                </form>
+                                <div className="user-actions">
+                                    <div className="user-icon" onClick={() => alert('User login modal would open here')}>
+                                        <i className="fas fa-user"></i>
+                                    </div>
+                                    <div className="wishlist-icon" onClick={toggleWishlist}>
+                                        <i className="fas fa-heart"></i>
+                                        {wishlistCount > 0 && <div className="wishlist-count">{wishlistCount}</div>}
+                                    </div>
+                                    <div className="cart-icon" onClick={toggleCart}>
+                                        <i className="fas fa-shopping-cart"></i>
+                                        {cartCount > 0 && <div className="cart-count">{cartCount}</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            );
+        }
+
+        // Hero Component
+        function Hero({ setCurrentPage }) {
+            return (
+                <section className="hero">
+                    <div className="container">
+                        <h1>Discover Your Next Favorite Book</h1>
+                        <p>Explore our vast collection of books across all genres. From bestsellers to hidden gems, find the perfect read for any occasion.</p>
+                        <button className="btn" onClick={() => setCurrentPage('home')}>
+                            Browse Collection
+                        </button>
+                    </div>
+                </section>
+            );
+        }
+
+        // Book Card Component
+        function BookCard({ book, addToCart, addToWishlist, showToast, isInWishlist }) {
+            const [added, setAdded] = useState(false);
+            const [wishlisted, setWishlisted] = useState(isInWishlist);
+
+            const handleAddToCart = (e) => {
+                e.stopPropagation();
+                if (!book.inStock) {
+                    showToast('This book is currently out of stock!', 'error');
+                    return;
+                }
+                addToCart(book);
+                setAdded(true);
+                showToast(`${book.title} added to cart!`, 'success');
+                
+                setTimeout(() => {
+                    setAdded(false);
+                }, 2000);
+            };
+
+            const handleWishlist = (e) => {
+                e.stopPropagation();
+                addToWishlist(book);
+                setWishlisted(!wishlisted);
+                showToast(wishlisted ? 'Removed from wishlist!' : 'Added to wishlist!', 'success');
+            };
+
+            const handleQuickView = (e) => {
+                e.stopPropagation();
+                alert(`Quick View: ${book.title}\n\n${book.description}\n\nRating: ${book.rating}/5 (${book.reviews} reviews)`);
+            };
+
+            const handleBookClick = () => {
+                alert(`Book Details:\n\nTitle: ${book.title}\nAuthor: ${book.author}\nPrice: ₹${book.price}\nCategory: ${book.category}\n\n${book.description}`);
+            };
+
+            const discount = Math.round(((book.originalPrice - book.price) / book.originalPrice) * 100);
+
+            return (
+                <div className="book-card" onClick={handleBookClick}>
+                    {book.badge && <div className="book-badge">{book.badge}</div>}
+                    <div className="book-img">
+                        <img src={book.image} alt={book.title} />
+                        <i className="fas fa-book" style={{display: 'none'}}></i>
+                        <div className="book-actions">
+                            <button className="quick-view" onClick={handleQuickView}>
+                                <i className="fas fa-eye"></i>
+                            </button>
+                            <button 
+                                className={`wishlist-btn ${wishlisted ? 'active' : ''}`}
+                                onClick={handleWishlist}
+                            >
+                                <i className="fas fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div className="book-info">
+                        <h3 className="book-title">{book.title}</h3>
+                        <p className="book-author">{book.author}</p>
+                        <div className="book-rating">
+                            {'★'.repeat(Math.floor(book.rating))}
+                            {'☆'.repeat(5 - Math.floor(book.rating))}
+                            <span> ({book.reviews})</span>
+                        </div>
+                        <div className="book-price">
+                            ₹{book.price}
+                            {book.originalPrice > book.price && (
+                                <>
+                                    <span className="original-price">₹{book.originalPrice}</span>
+                                    <span className="discount">{discount}% off</span>
+                                </>
+                            )}
+                        </div>
+                        <button 
+                            className={`add-to-cart ${added ? 'added' : ''}`}
+                            onClick={handleAddToCart}
+                            disabled={!book.inStock}
+                        >
+                            {!book.inStock ? 'Out of Stock' : added ? 'Added!' : 'Add to Cart'}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // Featured Books Component
+        function FeaturedBooks({ books, addToCart, addToWishlist, showToast, activeCategory, wishlist, searchQuery, loading }) {
+            let filteredBooks = books;
+
+            // Apply search filter if there's a search query
+            if (searchQuery) {
+                filteredBooks = books.filter(book => 
+                    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    book.category.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            } else {
+                // Apply category filter if no search query
+                filteredBooks = activeCategory === 'all' 
+                    ? books 
+                    : books.filter(book => 
+                        activeCategory === 'bestsellers' 
+                        ? book.badge === 'Bestseller'
+                        : book.category.toLowerCase().includes(activeCategory)
+                    );
+            }
+
+            if (loading) {
+                return (
+                    <section className="container">
+                        <div className="empty-state">
+                            <div className="loading" style={{width: '40px', height: '40px', margin: '0 auto'}}></div>
+                            <p>Loading books...</p>
+                        </div>
+                    </section>
+                );
+            }
+
+            return (
+                <section className="container">
+                    {searchQuery ? (
+                        <div className="search-results">
+                            <div className="search-info">
+                                <h2 className="section-title">Search Results</h2>
+                                <p>Found {filteredBooks.length} books matching "{searchQuery}"</p>
+                            </div>
+                            {filteredBooks.length === 0 ? (
+                                <div className="empty-state">
+                                    <i className="fas fa-search"></i>
+                                    <h3>No books found</h3>
+                                    <p>Try searching with different keywords or browse our categories.</p>
+                                </div>
+                            ) : (
+                                <div className="books-grid">
+                                    {filteredBooks.map(book => (
+                                        <BookCard 
+                                            key={book.id} 
+                                            book={book} 
+                                            addToCart={addToCart}
+                                            addToWishlist={addToWishlist}
+                                            showToast={showToast}
+                                            isInWishlist={wishlist.some(item => item.id === book.id)}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <h2 className="section-title">
+                                {activeCategory === 'all' ? 'Featured Books' : 
+                                 activeCategory === 'bestsellers' ? 'Best Sellers' : 
+                                 activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1) + ' Books'}
+                            </h2>
+                            <div className="books-grid">
+                                {filteredBooks.map(book => (
+                                    <BookCard 
+                                        key={book.id} 
+                                        book={book} 
+                                        addToCart={addToCart}
+                                        addToWishlist={addToWishlist}
+                                        showToast={showToast}
+                                        isInWishlist={wishlist.some(item => item.id === book.id)}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </section>
+            );
+        }
+
+        // Categories Component
+        function Categories({ setActiveCategory, setCurrentPage, categories, loading }) {
+            if (loading) {
+                return (
+                    <section className="categories">
+                        <div className="container">
+                            <h2 className="section-title">Browse Categories</h2>
+                            <div className="categories-grid">
+                                {[1,2,3,4,5,6].map(i => (
+                                    <div key={i} className="category-card" style={{opacity: 0.5}}>
+                                        <div className="loading" style={{margin: '0 auto'}}></div>
+                                        <h3>Loading...</h3>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                );
+            }
+
+            return (
+                <section className="categories">
+                    <div className="container">
+                        <h2 className="section-title">Browse Categories</h2>
+                        <div className="categories-grid">
+                            {categories.map(category => (
+                                <div 
+                                    key={category.id} 
+                                    className="category-card"
+                                    onClick={() => {
+                                        setActiveCategory(category.name.toLowerCase());
+                                        setCurrentPage('home');
+                                    }}
+                                >
+                                    <i className={category.icon}></i>
+                                    <h3>{category.name}</h3>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // Cart Component
+        function Cart({ isOpen, toggleCart, cartItems, updateQuantity, removeFromCart, proceedToCheckout }) {
+            const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            return (
+                <>
+                    <div className={`overlay ${isOpen ? 'show' : ''}`} onClick={toggleCart}></div>
+                    <div className={`modal cart-modal ${isOpen ? 'open' : ''}`}>
+                        <div className="modal-header">
+                            <h2>Your Cart ({cartItems.length})</h2>
+                            <button className="close-modal" onClick={toggleCart}>
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div className="modal-content">
+                            {cartItems.length === 0 ? (
+                                <div className="empty-state">
+                                    <i className="fas fa-shopping-cart"></i>
+                                    <p>Your cart is empty</p>
+                                    <button className="btn" onClick={toggleCart} style={{marginTop: '1rem'}}>
+                                        Continue Shopping
+                                    </button>
+                                </div>
+                            ) : (
+                                cartItems.map(item => (
+                                    <div key={item.id} className="cart-item">
+                                        <div className="cart-item-img">
+                                            <img src={item.image} alt={item.title} />
+                                        </div>
+                                        <div className="cart-item-details">
+                                            <h4 className="cart-item-title">{item.title}</h4>
+                                            <p className="cart-item-price">₹{item.price} x {item.quantity}</p>
+                                            <div className="quantity-controls">
+                                                <button 
+                                                    className="quantity-btn"
+                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    disabled={item.quantity <= 1}
+                                                >
+                                                    <i className="fas fa-minus"></i>
+                                                </button>
+                                                <span className="quantity">{item.quantity}</span>
+                                                <button 
+                                                    className="quantity-btn"
+                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                >
+                                                    <i className="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            className="item-remove"
+                                            onClick={() => removeFromCart(item.id)}
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        {cartItems.length > 0 && (
+                            <div className="modal-footer">
+                                <div className="cart-total">
+                                    <span>Total:</span>
+                                    <span>₹{total}</span>
+                                </div>
+                                <button 
+                                    className="checkout-btn" 
+                                    onClick={proceedToCheckout}
+                                >
+                                    Proceed to Checkout
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </>
+            );
+        }
+
+        // Wishlist Component
+        function Wishlist({ isOpen, toggleWishlist, wishlistItems, removeFromWishlist, addToCart, showToast }) {
+            const handleAddToCartFromWishlist = (book) => {
+                addToCart(book);
+                showToast(`${book.title} added to cart from wishlist!`, 'success');
+            };
+
+            return (
+                <>
+                    <div className={`overlay ${isOpen ? 'show' : ''}`} onClick={toggleWishlist}></div>
+                    <div className={`modal cart-modal ${isOpen ? 'open' : ''}`}>
+                        <div className="modal-header">
+                            <h2>Your Wishlist ({wishlistItems.length})</h2>
+                            <button className="close-modal" onClick={toggleWishlist}>
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div className="modal-content">
+                            {wishlistItems.length === 0 ? (
+                                <div className="empty-state">
+                                    <i className="fas fa-heart"></i>
+                                    <p>Your wishlist is empty</p>
+                                    <button className="btn" onClick={toggleWishlist} style={{marginTop: '1rem'}}>
+                                        Browse Books
+                                    </button>
+                                </div>
+                            ) : (
+                                wishlistItems.map(item => (
+                                    <div key={item.id} className="wishlist-item">
+                                        <div className="wishlist-item-img">
+                                            <img src={item.image} alt={item.title} />
+                                        </div>
+                                        <div className="wishlist-item-details">
+                                            <h4 className="wishlist-item-title">{item.title}</h4>
+                                            <p className="wishlist-item-price">₹{item.price}</p>
+                                            <button 
+                                                className="add-to-cart"
+                                                onClick={() => handleAddToCartFromWishlist(item)}
+                                            >
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                        <button 
+                                            className="item-remove"
+                                            onClick={() => removeFromWishlist(item.id)}
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        // Payment Component
+        function Payment({ isOpen, togglePayment, cartItems, processPayment, showToast }) {
+            const [selectedMethod, setSelectedMethod] = useState(1);
+            const [cardNumber, setCardNumber] = useState('');
+            const [cardName, setCardName] = useState('');
+            const [expiry, setExpiry] = useState('');
+            const [cvv, setCvv] = useState('');
+            const [upiId, setUpiId] = useState('');
+            const [isProcessing, setIsProcessing] = useState(false);
+
+            const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            const handlePayment = (e) => {
+                e.preventDefault();
+                if (isProcessing) return;
+
+                // Basic validation
+                if (selectedMethod <= 2) {
+                    if (!cardNumber || !cardName || !expiry || !cvv) {
+                        showToast('Please fill all card details', 'error');
+                        return;
+                    }
+                } else if (selectedMethod === 3) {
+                    if (!upiId || !upiId.includes('@')) {
+                        showToast('Please enter a valid UPI ID', 'error');
+                        return;
+                    }
+                }
+
+                setIsProcessing(true);
+                
+                // Simulate payment processing
+                setTimeout(() => {
+                    setIsProcessing(false);
+                    processPayment();
+                }, 2000);
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <>
+                    <div className="overlay show" onClick={togglePayment}></div>
+                    <div className="payment-modal open">
+                        <div className="payment-header">
+                            <h2>Complete Your Purchase</h2>
+                            <button className="close-modal" onClick={togglePayment}>
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form onSubmit={handlePayment}>
+                            <div className="payment-body">
+                                <div className="cart-total" style={{marginBottom: '1.5rem'}}>
+                                    <span>Order Total:</span>
+                                    <span>₹{total}</span>
+                                </div>
+                                
+                                <h3 style={{marginBottom: '1rem'}}>Select Payment Method</h3>
+                                <div className="payment-methods">
+                                    {paymentMethods.map(method => (
+                                        <div 
+                                            key={method.id}
+                                            className={`payment-method ${selectedMethod === method.id ? 'selected' : ''}`}
+                                            onClick={() => setSelectedMethod(method.id)}
+                                        >
+                                            <i className={method.icon}></i>
+                                            <div>{method.name}</div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {selectedMethod <= 2 && (
+                                    <div>
+                                        <div className="form-group">
+                                            <label>Card Number</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder="1234 5678 9012 3456"
+                                                value={cardNumber}
+                                                onChange={(e) => setCardNumber(e.target.value)}
+                                                maxLength="16"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Cardholder Name</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder="John Doe"
+                                                value={cardName}
+                                                onChange={(e) => setCardName(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-row">
+                                            <div className="form-group">
+                                                <label>Expiry Date</label>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="MM/YY"
+                                                    value={expiry}
+                                                    onChange={(e) => setExpiry(e.target.value)}
+                                                    maxLength="5"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>CVV</label>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="123"
+                                                    value={cvv}
+                                                    onChange={(e) => setCvv(e.target.value)}
+                                                    maxLength="3"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedMethod === 3 && (
+                                    <div className="form-group">
+                                        <label>UPI ID</label>
+                                        <input 
+                                            type="text" 
+                                            placeholder="yourname@upi"
+                                            value={upiId}
+                                            onChange={(e) => setUpiId(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                )}
+
+                                {selectedMethod === 4 && (
+                                    <div className="form-group">
+                                        <label>Select Bank</label>
+                                        <select required>
+                                            <option value="">Select your bank</option>
+                                            <option>State Bank of India</option>
+                                            <option>HDFC Bank</option>
+                                            <option>ICICI Bank</option>
+                                            <option>Axis Bank</option>
+                                        </select>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="payment-footer">
+                                <button type="button" className="btn btn-outline" onClick={togglePayment}>
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    className="btn checkout-btn" 
+                                    disabled={isProcessing}
+                                >
+                                    {isProcessing ? (
+                                        <>
+                                            <div className="loading"></div>
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        `Pay ₹${total}`
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </>
+            );
+        }
+
+        // Order Success Component
+        function OrderSuccess({ isOpen, orderDetails, toggleSuccess }) {
+            if (!isOpen) return null;
+
+            return (
+                <>
+                    <div className="overlay show" onClick={toggleSuccess}></div>
+                    <div className="payment-modal open">
+                        <div className="order-success">
+                            <i className="fas fa-check-circle"></i>
+                            <h3>Order Placed Successfully!</h3>
+                            <p>Thank you for your purchase. Your order has been confirmed.</p>
+                            <p><strong>Order ID:</strong> #{orderDetails.id}</p>
+                            <p><strong>Total Amount:</strong> ₹{orderDetails.total}</p>
+                            <p>You will receive a confirmation email shortly.</p>
+                            <button className="btn" onClick={toggleSuccess} style={{marginTop: '1rem'}}>
+                                Continue Shopping
+                            </button>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        // Newsletter Component
+        function Newsletter() {
+            const [email, setEmail] = useState('');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (email) {
+                    alert(`Thank you for subscribing with: ${email}`);
+                    setEmail('');
+                }
+            };
+
+            return (
+                <section className="newsletter">
+                    <div className="container">
+                        <h2>Subscribe to Our Newsletter</h2>
+                        <p>Stay updated with our latest book releases, promotions, and literary events.</p>
+                        <form className="newsletter-form" onSubmit={handleSubmit}>
+                            <input 
+                                type="email" 
+                                placeholder="Your email address" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required 
+                            />
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    </div>
+                </section>
+            );
+        }
+
+        // Footer Component
+        function Footer({ setCurrentPage }) {
+            return (
+                <footer>
+                    <div className="container">
+                        <div className="footer-content">
+                            <div className="footer-column">
+                                <h3>BookNook</h3>
+                                <p>Your premier destination for books of all genres. We're passionate about connecting readers with their next great read.</p>
+                                <div className="social-links">
+                                    <a onClick={() => alert('Facebook page would open')}><i className="fab fa-facebook-f"></i></a>
+                                    <a onClick={() => alert('Twitter page would open')}><i className="fab fa-twitter"></i></a>
+                                    <a onClick={() => alert('Instagram page would open')}><i className="fab fa-instagram"></i></a>
+                                    <a onClick={() => alert('Pinterest page would open')}><i className="fab fa-pinterest"></i></a>
+                                </div>
+                            </div>
+                            <div className="footer-column">
+                                <h3>Quick Links</h3>
+                                <ul>
+                                    <li><a onClick={() => setCurrentPage('home')}>Home</a></li>
+                                    <li><a onClick={() => alert('Shop page')}>Shop</a></li>
+                                    <li><a onClick={() => alert('Categories page')}>Categories</a></li>
+                                    <li><a onClick={() => alert('Best Sellers page')}>Best Sellers</a></li>
+                                    <li><a onClick={() => setCurrentPage('about')}>About Us</a></li>
+                                </ul>
+                            </div>
+                            <div className="footer-column">
+                                <h3>Customer Service</h3>
+                                <ul>
+                                    <li><a onClick={() => alert('Contact page')}>Contact Us</a></li>
+                                    <li><a onClick={() => alert('Shipping policy')}>Shipping Policy</a></li>
+                                    <li><a onClick={() => alert('Returns policy')}>Returns & Refunds</a></li>
+                                    <li><a onClick={() => alert('FAQ page')}>FAQ</a></li>
+                                    <li><a onClick={() => alert('My Account page')}>My Account</a></li>
+                                </ul>
+                            </div>
+                            <div className="footer-column">
+                                <h3>Contact Info</h3>
+                                <ul>
+                                    <li><i className="fas fa-map-marker-alt"></i> 123 Book Street, Mumbai, India</li>
+                                    <li><i className="fas fa-phone"></i> +91 (555) 123-4567</li>
+                                    <li><i className="fas fa-envelope"></i> info@booknook.in</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="copyright">
+                            <p>&copy; 2023 BookNook. All rights reserved.</p>
+                        </div>
+                    </div>
+                </footer>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [cartItems, setCartItems] = useState([]);
+            const [wishlist, setWishlist] = useState([]);
+            const [isCartOpen, setIsCartOpen] = useState(false);
+            const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+            const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+            const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+            const [activeCategory, setActiveCategory] = useState('all');
+            const [currentPage, setCurrentPage] = useState('home');
+            const [searchQuery, setSearchQuery] = useState('');
+            const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+            const [orderDetails, setOrderDetails] = useState({});
+            const [books, setBooks] = useState([]);
+            const [categories, setCategories] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [apiConnected, setApiConnected] = useState(false);
+
+            // Load books and categories from GraphQL API
+            useEffect(() => {
+                const loadData = async () => {
+                    try {
+                        setLoading(true);
+                        const [booksData, categoriesData] = await Promise.all([
+                            bookNookAPI.getAllBooks(),
+                            bookNookAPI.getCategories()
+                        ]);
+                        setBooks(booksData);
+                        setCategories(categoriesData);
+                        setApiConnected(bookNookAPI.isConnected);
+                    } catch (error) {
+                        console.error('Error loading data:', error);
+                        // Fallback to local data if API fails
+                        setBooks(bookData);
+                        setCategories(categories);
+                        setApiConnected(false);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
+                loadData();
+            }, []);
+
+            // Handle search with GraphQL
+            const handleSearch = async (query) => {
+                setSearchQuery(query);
+                if (query.trim() === '') {
+                    // If empty search, load all books
+                    const allBooks = await bookNookAPI.getAllBooks();
+                    setBooks(allBooks);
+                    return;
+                }
+
+                try {
+                    const searchResults = await bookNookAPI.searchBooks(query);
+                    setBooks(searchResults);
+                } catch (error) {
+                    console.error('Search error:', error);
+                    // Fallback to local search
+                    const filteredBooks = bookData.filter(book => 
+                        book.title.toLowerCase().includes(query.toLowerCase()) ||
+                        book.author.toLowerCase().includes(query.toLowerCase()) ||
+                        book.category.toLowerCase().includes(query.toLowerCase())
+                    );
+                    setBooks(filteredBooks);
+                }
+            };
+
+            // Update addToCart to use GraphQL mutation
+            const addToCart = async (book) => {
+                try {
+                    await bookNookAPI.addToCart(book.id, 1);
+                    
+                    // Update local state
+                    setCartItems(prevItems => {
+                        const existingItem = prevItems.find(item => item.id === book.id);
+                        
+                        if (existingItem) {
+                            return prevItems.map(item =>
+                                item.id === book.id
+                                    ? { ...item, quantity: item.quantity + 1 }
+                                    : item
+                            );
+                        } else {
+                            return [...prevItems, { ...book, quantity: 1 }];
+                        }
+                    });
+                    
+                    showToast(`${book.title} added to cart!`, 'success');
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    // Fallback to local state update
+                    setCartItems(prevItems => {
+                        const existingItem = prevItems.find(item => item.id === book.id);
+                        
+                        if (existingItem) {
+                            return prevItems.map(item =>
+                                item.id === book.id
+                                    ? { ...item, quantity: item.quantity + 1 }
+                                    : item
+                            );
+                        } else {
+                            return [...prevItems, { ...book, quantity: 1 }];
+                        }
+                    });
+                    showToast(`${book.title} added to cart!`, 'success');
+                }
+            };
+
+            // Update quantity in cart
+            const updateQuantity = (bookId, newQuantity) => {
+                if (newQuantity < 1) {
+                    removeFromCart(bookId);
+                    return;
+                }
+                
+                setCartItems(prevItems => 
+                    prevItems.map(item =>
+                        item.id === bookId
+                            ? { ...item, quantity: newQuantity }
+                            : item
+                    )
+                );
+            };
+
+            // Remove from cart
+            const removeFromCart = (bookId) => {
+                setCartItems(prevItems => prevItems.filter(item => item.id !== bookId));
+            };
+
+            // Wishlist functionality
+            const addToWishlist = (book) => {
+                setWishlist(prevItems => {
+                    const existingItem = prevItems.find(item => item.id === book.id);
+                    
+                    if (existingItem) {
+                        return prevItems.filter(item => item.id !== book.id);
+                    } else {
+                        return [...prevItems, book];
+                    }
+                });
+            };
+
+            const removeFromWishlist = (bookId) => {
+                setWishlist(prevItems => prevItems.filter(item => item.id !== bookId));
+            };
+
+            // Proceed to checkout
+            const proceedToCheckout = () => {
+                if (cartItems.length === 0) {
+                    showToast('Your cart is empty!', 'error');
+                    return;
+                }
+                setIsCartOpen(false);
+                setIsPaymentOpen(true);
+            };
+
+            // Process payment with GraphQL
+            const processPayment = async () => {
+                try {
+                    const cartItemsForAPI = cartItems.map(item => ({
+                        bookId: item.id,
+                        quantity: item.quantity
+                    }));
+
+                    const order = await bookNookAPI.createOrder(cartItemsForAPI);
+                    
+                    setOrderDetails({
+                        id: order.id,
+                        total: order.total,
+                        items: order.items.length,
+                        date: new Date().toLocaleDateString()
+                    });
+                    
+                    // Clear cart and close payment modal
+                    setCartItems([]);
+                    setIsPaymentOpen(false);
+                    setIsSuccessOpen(true);
+                    
+                    showToast('Order placed successfully!', 'success');
+                } catch (error) {
+                    console.error('Payment error:', error);
+                    // Fallback to local order processing
+                    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    setOrderDetails({
+                        id: `ORD${Date.now()}`,
+                        total: total,
+                        items: cartItems.length,
+                        date: new Date().toLocaleDateString()
+                    });
+                    
+                    setCartItems([]);
+                    setIsPaymentOpen(false);
+                    setIsSuccessOpen(true);
+                    showToast('Order placed successfully!', 'success');
+                }
+            };
+
+            // Show toast notification
+            const showToast = (message, type = 'success') => {
+                setToast({ show: true, message, type });
+                setTimeout(() => {
+                    setToast({ show: false, message: '', type: 'success' });
+                }, 3000);
+            };
+
+            // Calculate counts
+            const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+            const wishlistCount = wishlist.length;
+
+            return (
+                <div className="App">
+                    <ApiStatus isConnected={apiConnected} />
+                    <Header 
+                        cartCount={cartCount}
+                        wishlistCount={wishlistCount}
+                        toggleCart={() => setIsCartOpen(!isCartOpen)}
+                        toggleWishlist={() => setIsWishlistOpen(!isWishlistOpen)}
+                        setActiveCategory={setActiveCategory}
+                        activeCategory={activeCategory}
+                        setCurrentPage={setCurrentPage}
+                        currentPage={currentPage}
+                        setSearchQuery={handleSearch}
+                    />
+                    
+                    {currentPage === 'about' ? (
+                        <AboutPage isActive={currentPage === 'about'} />
+                    ) : (
+                        <>
+                            <Hero setCurrentPage={setCurrentPage} />
+                            <FeaturedBooks 
+                                books={books} 
+                                addToCart={addToCart}
+                                addToWishlist={addToWishlist}
+                                showToast={showToast}
+                                activeCategory={activeCategory}
+                                wishlist={wishlist}
+                                searchQuery={searchQuery}
+                                loading={loading}
+                            />
+                            <Categories 
+                                setActiveCategory={setActiveCategory}
+                                setCurrentPage={setCurrentPage}
+                                categories={categories}
+                                loading={loading}
+                            />
+                        </>
+                    )}
+                    
+                    <Newsletter />
+                    <Footer setCurrentPage={setCurrentPage} />
+                    
+                    <Cart 
+                        isOpen={isCartOpen} 
+                        toggleCart={() => setIsCartOpen(false)}
+                        cartItems={cartItems}
+                        updateQuantity={updateQuantity}
+                        removeFromCart={removeFromCart}
+                        proceedToCheckout={proceedToCheckout}
+                    />
+                    
+                    <Wishlist 
+                        isOpen={isWishlistOpen} 
+                        toggleWishlist={() => setIsWishlistOpen(false)}
+                        wishlistItems={wishlist}
+                        removeFromWishlist={removeFromWishlist}
+                        addToCart={addToCart}
+                        showToast={showToast}
+                    />
+                    
+                    <Payment 
+                        isOpen={isPaymentOpen}
+                        togglePayment={() => setIsPaymentOpen(false)}
+                        cartItems={cartItems}
+                        processPayment={processPayment}
+                        showToast={showToast}
+                    />
+                    
+                    <OrderSuccess 
+                        isOpen={isSuccessOpen}
+                        orderDetails={orderDetails}
+                        toggleSuccess={() => setIsSuccessOpen(false)}
+                    />
+                    
+                    <Toast 
+                        message={toast.message} 
+                        show={toast.show} 
+                        type={toast.type} 
+                    />
+                </div>
+            );
+        }
+
+        // Render the App
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
